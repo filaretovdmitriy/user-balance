@@ -13,7 +13,7 @@ import { reactive } from 'vue';
 <template>
     <div class="mx-auto w-50 ">
         <form @submit.prevent="handleLogin" class="p-4 bg-light">
-           <div class="form-group mb-4">
+            <div class="form-group mb-4">
             <label>E-mail</label>
             <input  class="form-control" v-model="form.email" type="text"/>
            </div> 
