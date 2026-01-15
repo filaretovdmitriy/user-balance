@@ -6,7 +6,7 @@
 
     <h1>Аутентификация</h1>
 
-    <div>Описание страницы</div>
+    <div class="py-4">Описание страницы</div>
     
     <div data-vue="auth-form"></div>
     @push('scripts')
