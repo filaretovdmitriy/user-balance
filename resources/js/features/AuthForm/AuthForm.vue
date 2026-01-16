@@ -1,12 +1,31 @@
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import {http} from '@/shared/api/axios.js'
 
     const form = reactive({
         email: '',
         password: ''
     })
+
+    const user = ref(null);
+
+    const fetchUser = async () => {
+        const {data} = await http.get('/api/user');
+        user.value = data;
+    }
     const handleLogin = async () => {
-       
+       try{
+             await http.get('/sanctum/csrf-cookie');
+             await http.post('/api/login', {
+                login: form.email,
+                password: form.password
+             });
+
+             await fetchUser();
+       }
+       catch(e){
+           console.log(e);
+       }
     }
 </script>
 
