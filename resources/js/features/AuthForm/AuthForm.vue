@@ -13,6 +13,13 @@ import {http} from '@/shared/api/axios.js'
         const {data} = await http.get('/api/user');
         user.value = data;
     }
+
+    const fetchTransactions = async () => {
+        const {data} = await http.get('/api/transactions');
+        
+    }
+
+
     const handleLogin = async () => {
        try{
              await http.get('/sanctum/csrf-cookie');
@@ -22,6 +29,7 @@ import {http} from '@/shared/api/axios.js'
              });
 
              await fetchUser();
+             await fetchTransactions();
        }
        catch(e){
            console.log(e);
