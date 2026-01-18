@@ -4,10 +4,13 @@ import { http } from '@/shared/api/axios.js'
 
 const user = ref(null)
 const transactions = ref([])
+
 const loadingTx = ref(false)
 const txError = ref(null)
 
-let intervalId = null
+const search = ref('')
+const searchDebounceMs = 400
+let debounceId = null
 
 const fetchUser = async () => {
   const { data } = await http.get('/api/user')
@@ -17,8 +20,14 @@ const fetchUser = async () => {
 const fetchTransactions = async () => {
   loadingTx.value = true
   txError.value = null
+
   try {
-    const { data } = await http.get('/api/transactions/latest')
+    const params = {}
+    if (search.value.trim() !== '') {
+      params.search = search.value.trim()
+    }
+
+    const { data } = await http.get('/api/transactions', { params })
     transactions.value = Array.isArray(data) ? data : (data.data ?? [])
   } catch (e) {
     txError.value = e
@@ -34,44 +43,46 @@ const typeBadgeClass = (type) => {
   return 'bg-secondary'
 }
 
-const formatDate = (iso) => {
-  if (!iso) return ''
-  return new Date(iso).toLocaleString()
-}
+const formatDate = (iso) => (iso ? new Date(iso).toLocaleString() : '')
 
-
-const gotoTransactions = () => {
-    document.location.href='/transactions'
+const onSearchInput = () => {
+  clearTimeout(debounceId)
+  debounceId = setTimeout(() => {
+    fetchTransactions().catch(() => {})
+  }, searchDebounceMs)
 }
 
 onMounted(async () => {
   try {
     await fetchUser()
     await fetchTransactions()
-
-    intervalId = setInterval(() => {
-      fetchTransactions().catch(() => {
-        // если нужно — можно остановить интервал/редиректнуть на /auth при 401
-      })
-    }, 10_000)
   } catch (e) {
-    // window.location.href = '/auth'
-    // console.log(e)
+    window.location.href = '/auth'
   }
 })
 
 onUnmounted(() => {
-  if (intervalId) clearInterval(intervalId)
+  clearTimeout(debounceId)
 })
 </script>
 
 <template>
   <div class="container py-4">
     <div class="d-flex align-items-center justify-content-between mb-3">
-      <h2 class="mb-0">Транзакции пользователя {{ user?.name }}</h2>
-      <button class="btn btn-outline-primary btn-sm" @click="gotoTransactions">
-        Архив транзакций
-      </button>
+      <h2 class="mb-0">Все транзакции</h2>
+     
+    </div>
+
+    <!-- Поиск -->
+    <div class="input-group mb-3">
+      <span class="input-group-text">Поиск</span>
+      <input
+        class="form-control"
+        type="text"
+        placeholder="Поиск транзакции..."
+        v-model="search"
+        @input="onSearchInput"
+      />
     </div>
 
     <div v-if="txError" class="alert alert-danger">
@@ -81,7 +92,7 @@ onUnmounted(() => {
     <div class="card">
       <div class="card-body">
         <div class="text-muted mb-2">
-          Текущий баланс: {{ user?.balance }}
+          Найдено: {{ transactions.length }}
         </div>
 
         <div v-if="loadingTx" class="py-3">
@@ -104,7 +115,7 @@ onUnmounted(() => {
             <tbody>
               <tr v-if="transactions.length === 0">
                 <td colspan="5" class="text-center text-muted py-4">
-                  Транзакций пока нет
+                  Ничего не найдено
                 </td>
               </tr>
 

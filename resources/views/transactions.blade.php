@@ -6,6 +6,7 @@
 
     <h1>История операций</h1>
 
-    <div>Тест</div>
+     <div data-vue="user-transactions"></div>
+    @vite('resources/js/features/UserTransactions/UserTransactions.js')
 
 @endsection

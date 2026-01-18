@@ -19,8 +19,13 @@ class TransactionController extends Controller
     public function allTransactions(Request $request)
     {
         $user = $request->user();
+        $search = $request->query('search');
 
-        $transactions = $user->transactions()->get();
+        $transactions = $user->transactions()
+        ->when($search, function ($query, $search) {
+            $query->where('description', 'like', '%' . $search . '%');
+        })
+        ->get();
 
         return TransactionsResource::collection($transactions);
     }
