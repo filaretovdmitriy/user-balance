@@ -25,6 +25,7 @@ class TransactionController extends Controller
         ->when($search, function ($query, $search) {
             $query->where('description', 'like', '%' . $search . '%');
         })
+        ->latest()
         ->get();
 
         return TransactionsResource::collection($transactions);
