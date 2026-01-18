@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DTO\LoginData;
-use AuthService;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller

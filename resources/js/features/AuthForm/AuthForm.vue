@@ -17,7 +17,7 @@ import {http} from '@/shared/api/axios.js'
        try{
              await http.get('/sanctum/csrf-cookie');
              await http.post('/api/login', {
-                login: form.email,
+                email: form.email,
                 password: form.password
              });
 
