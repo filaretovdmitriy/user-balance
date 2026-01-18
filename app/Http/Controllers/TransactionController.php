@@ -3,15 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TransactionsResource;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
+    public function __construct(private readonly TransactionService $transactions)
+    {
+    }
+
     public function latestTransactions(Request $request)
     {
         $user = $request->user();
 
-        $transactions = $user->transactions()->latest()->take(5)->get();
+        $transactions = $this->transactions->latest($user, 5);
 
         return TransactionsResource::collection($transactions);
     }
@@ -21,12 +26,7 @@ class TransactionController extends Controller
         $user = $request->user();
         $search = $request->query('search');
 
-        $transactions = $user->transactions()
-        ->when($search, function ($query, $search) {
-            $query->where('description', 'like', '%' . $search . '%');
-        })
-        ->latest()
-        ->get();
+        $transactions = $this->transactions->all($user, $search);
 
         return TransactionsResource::collection($transactions);
     }
