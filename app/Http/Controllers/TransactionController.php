@@ -11,7 +11,16 @@ class TransactionController extends Controller
     {
         $user = $request->user();
 
-        $transactions = $user->transactions->latest()->take(5)->get();
+        $transactions = $user->transactions()->latest()->take(5)->get();
+
+        return TransactionsResource::collection($transactions);
+    }
+
+    public function allTransactions(Request $request)
+    {
+        $user = $request->user();
+
+        $transactions = $user->transactions()->get();
 
         return TransactionsResource::collection($transactions);
     }
