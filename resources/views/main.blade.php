@@ -6,6 +6,7 @@
 
     <h1>Пользователь</h1>
 
-    <div>Тест</div>
+    <div data-vue="user-profile"></div>
+    @vite('resources/js/features/UserProfile/UserProfile.js')
 
 @endsection

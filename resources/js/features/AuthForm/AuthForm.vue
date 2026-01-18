@@ -9,15 +9,7 @@ import {http} from '@/shared/api/axios.js'
 
     const user = ref(null);
 
-    const fetchUser = async () => {
-        const {data} = await http.get('/api/user');
-        user.value = data;
-    }
-
-    const fetchTransactions = async () => {
-        const {data} = await http.get('/api/transactions');
-        
-    }
+    
 
 
     const handleLogin = async () => {
@@ -28,8 +20,8 @@ import {http} from '@/shared/api/axios.js'
                 password: form.password
              });
 
-             await fetchUser();
-             await fetchTransactions();
+            window.location.href = '/';
+
        }
        catch(e){
            console.log(e);
