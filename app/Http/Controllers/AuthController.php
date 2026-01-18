@@ -2,30 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\LoginData;
+use AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function __construct(private AuthService $authService)
     {
-        $credentials = $request->validate([
-            'login' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+    }
 
-        $ok = Auth::guard('web')->attempt([
-            'email' => $credentials['login'],
-            'password' => $credentials['password'],
-        ]);
-
-        if (! $ok) {
-            throw ValidationException::withMessages([
-                'login' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-
+    public function login(Request $request, LoginData $data)
+    {
+        $this->authService->login($data);
         $request->session()->regenerate();
 
         return response()->noContent();

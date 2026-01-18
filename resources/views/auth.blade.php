@@ -10,7 +10,7 @@
     
     <div data-vue="auth-form"></div>
     @push('scripts')
-        @vite('resources/js/features/AuthForm/AuthForm.js')
+    @vite('resources/js/features/AuthForm/AuthForm.js')
     @endpush
 
 @endsection
