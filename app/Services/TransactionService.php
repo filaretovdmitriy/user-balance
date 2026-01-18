@@ -2,53 +2,25 @@
 
 namespace App\Services;
 
+use App\Jobs\ApplyTransactionsOperation;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
 class TransactionService
 {
-    public function credit(User $user, string $amount, ?string $description): Transaction
+    public function credit(User $user, string $amount, ?string $description): Bool
     {
-        return DB::transaction(function () use ($user, $amount, $description) {
-            $lockedUser = User::query()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+        ApplyTransactionsOperation::dispatch($user->id, 'credit', $amount, $description)
+            ->afterCommit();
 
-            $trx = Transaction::create([
-                'user_id' => $user->id,
-                'amount' => $amount,
-                'type' => 'credit',
-                'description' => $description,
-            ]);
-
-            $lockedUser->increment('balance', $amount);
-
-            return $trx;
-        });
+        return true;
     }
 
-    public function debit(User $user, string $amount, ?string $description): Transaction
+    public function debit(User $user, string $amount, ?string $description): Bool
     {
-        return DB::transaction(function () use ($user, $amount, $description) {
-            $lockedUser = User::query()->whereKey($user->id)->lockForUpdate()->firstOrFail();
-            $updated = User::whereKey($user->id)
-                ->where('balance', '>=', $amount)
-                ->decrement('balance', $amount);
+        ApplyTransactionsOperation::dispatch($user->id, 'debit', $amount, $description)
+           ->afterCommit();
 
-            if ($updated === 0) {
-                throw new RuntimeException('No money :( ');
-            }
-
-            $trx = Transaction::create([
-                'user_id' => $user->id,
-                'amount' => $amount,
-                'type' => 'debit',
-                'description' => $description,
-            ]);
-
-            $lockedUser->decrement('balance', $amount);
-
-            return $trx;
-        });
+        return true;
     }
 }
