@@ -49,7 +49,6 @@ class TransactionService
             $lockedUser->decrement('balance', $amount);
 
             return $trx;
-            
         });
     }
 }
