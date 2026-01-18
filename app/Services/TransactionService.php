@@ -42,7 +42,7 @@ class TransactionService
             $trx = Transaction::create([
                 'user_id' => $user->id,
                 'amount' => $amount,
-                'type' => 'credit',
+                'type' => 'debit',
                 'description' => $description,
             ]);
 

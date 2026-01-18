@@ -29,7 +29,7 @@ const fetchTransactions = async () => {
 }
 
 const typeBadgeClass = (type) => {
-  if (type === 'debet') return 'bg-success'
+  if (type === 'debit') return 'bg-success'
   if (type === 'credit') return 'bg-danger'
   return 'bg-secondary'
 }
@@ -51,12 +51,12 @@ onMounted(async () => {
 
     intervalId = setInterval(() => {
       fetchTransactions().catch(() => {
-        // если нужно — можно остановить интервал/редиректнуть на /auth при 401
+        
       })
     }, 10_000)
   } catch (e) {
-    // window.location.href = '/auth'
-    // console.log(e)
+    console.log(e)
+    window.location.href = '/auth'
   }
 })
 

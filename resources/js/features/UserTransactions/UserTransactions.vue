@@ -38,7 +38,7 @@ const fetchTransactions = async () => {
 }
 
 const typeBadgeClass = (type) => {
-  if (type === 'debet') return 'bg-success'
+  if (type === 'debit') return 'bg-success'
   if (type === 'credit') return 'bg-danger'
   return 'bg-secondary'
 }
