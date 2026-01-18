@@ -67,9 +67,9 @@ onUnmounted(() => {
 <template>
   <div class="container py-4">
     <div class="d-flex align-items-center justify-content-between mb-3">
-      <h2 class="mb-0">Транзакции</h2>
-      <button class="btn btn-outline-primary btn-sm" :disabled="loadingTx" @click="fetchTransactions">
-        Обновить
+      <h2 class="mb-0">Транзакции пользователя {{ user?.name }}</h2>
+      <button class="btn btn-outline-primary btn-sm" @click="fetchTransactions">
+        Архив транзакций
       </button>
     </div>
 
@@ -80,7 +80,7 @@ onUnmounted(() => {
     <div class="card">
       <div class="card-body">
         <div class="text-muted mb-2">
-          Всего: {{ transactions.length }} | Сумма: {{ totalAmount }}
+          Текущий баланс: {{ user?.balance }}
         </div>
 
         <div v-if="loadingTx" class="py-3">
