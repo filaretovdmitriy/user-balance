@@ -12,6 +12,23 @@ const search = ref('')
 const searchDebounceMs = 400
 let debounceId = null
 
+// Клиентская сортировка по дате (created_at)
+const sortDir = ref('desc') // 'asc' | 'desc'
+const toggleSortByDate = () => {
+  sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+}
+
+const sortedTransactions = computed(() => {
+  const dir = sortDir.value === 'asc' ? 1 : -1
+
+  // Важно: сортируем копию, чтобы не мутировать исходный reactive-массив
+  return [...transactions.value].sort((a, b) => {
+    const at = a?.created_at ? new Date(a.created_at).getTime() : 0
+    const bt = b?.created_at ? new Date(b.created_at).getTime() : 0
+    return (at - bt) * dir
+  })
+})
+
 const fetchUser = async () => {
   const { data } = await http.get('/api/user')
   user.value = data
@@ -70,7 +87,6 @@ onUnmounted(() => {
   <div class="container py-4">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h2 class="mb-0">Все транзакции</h2>
-     
     </div>
 
     <!-- Поиск -->
@@ -92,7 +108,7 @@ onUnmounted(() => {
     <div class="card">
       <div class="card-body">
         <div class="text-muted mb-2">
-          Найдено: {{ transactions.length }}
+          Найдено: {{ sortedTransactions.length }}
         </div>
 
         <div v-if="loadingTx" class="py-3">
@@ -108,18 +124,29 @@ onUnmounted(() => {
                 <th style="width: 140px;">Сумма</th>
                 <th style="width: 140px;">Тип</th>
                 <th>Описание</th>
-                <th style="width: 220px;">Дата</th>
+
+                <!-- Сортировка по дате только на клиенте -->
+                <th
+                  style="width: 220px; cursor: pointer; user-select: none;"
+                  @click="toggleSortByDate"
+                  title="Сортировать по дате"
+                >
+                  Дата
+                  <span class="text-muted ms-1">
+                    {{ sortDir === 'asc' ? '▲' : '▼' }}
+                  </span>
+                </th>
               </tr>
             </thead>
 
             <tbody>
-              <tr v-if="transactions.length === 0">
+              <tr v-if="sortedTransactions.length === 0">
                 <td colspan="5" class="text-center text-muted py-4">
                   Ничего не найдено
                 </td>
               </tr>
 
-              <tr v-for="t in transactions" :key="t.id">
+              <tr v-for="t in sortedTransactions" :key="t.id">
                 <td>{{ t.id }}</td>
                 <td>{{ t.amount }}</td>
                 <td>
