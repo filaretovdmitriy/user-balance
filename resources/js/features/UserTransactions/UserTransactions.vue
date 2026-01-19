@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, onUnmounted, ref, computed } from 'vue'
-import { http } from '@/shared/api/axios.js'
+import { fetchUser } from '@/shared/api/endpoints/user.js'
+import { fetchAllTransactions } from '@/shared/api/endpoints/transactions.js'
+import { typeBadgeClass, formatDate } from '@/shared/utils.js'
 
 const user = ref(null)
 const transactions = ref([])
@@ -29,23 +31,12 @@ const sortedTransactions = computed(() => {
   })
 })
 
-const fetchUser = async () => {
-  const { data } = await http.get('/api/user')
-  user.value = data
-}
-
 const fetchTransactions = async () => {
   loadingTx.value = true
   txError.value = null
 
   try {
-    const params = {}
-    if (search.value.trim() !== '') {
-      params.search = search.value.trim()
-    }
-
-    const { data } = await http.get('/api/transactions', { params })
-    transactions.value = Array.isArray(data) ? data : (data.data ?? [])
+    transactions.value = await fetchAllTransactions(search.value)
   } catch (e) {
     txError.value = e
     throw e
@@ -53,14 +44,6 @@ const fetchTransactions = async () => {
     loadingTx.value = false
   }
 }
-
-const typeBadgeClass = (type) => {
-  if (type === 'debit') return 'bg-success'
-  if (type === 'credit') return 'bg-danger'
-  return 'bg-secondary'
-}
-
-const formatDate = (iso) => (iso ? new Date(iso).toLocaleString() : '')
 
 const onSearchInput = () => {
   clearTimeout(debounceId)
@@ -71,7 +54,7 @@ const onSearchInput = () => {
 
 onMounted(async () => {
   try {
-    await fetchUser()
+    user.value = await fetchUser()
     await fetchTransactions()
   } catch (e) {
    // window.location.href = '/auth'

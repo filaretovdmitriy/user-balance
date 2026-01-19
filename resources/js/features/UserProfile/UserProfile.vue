@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, onUnmounted, ref, computed } from 'vue'
-import { http } from '@/shared/api/axios.js'
+import { fetchUser } from '@/shared/api/endpoints/user.js'
+import { fetchLatestTransactions } from '@/shared/api/endpoints/transactions.js'
+import { typeBadgeClass, formatDate } from '@/shared/utils.js'
 
 const user = ref(null)
 const transactions = ref([])
@@ -9,34 +11,17 @@ const txError = ref(null)
 
 let intervalId = null
 
-const fetchUser = async () => {
-  const { data } = await http.get('/api/user')
-  user.value = data
-}
-
 const fetchTransactions = async () => {
   loadingTx.value = true
   txError.value = null
   try {
-    const { data } = await http.get('/api/transactions/latest')
-    transactions.value = Array.isArray(data) ? data : (data.data ?? [])
+    transactions.value = await fetchLatestTransactions()
   } catch (e) {
     txError.value = e
     throw e
   } finally {
     loadingTx.value = false
   }
-}
-
-const typeBadgeClass = (type) => {
-  if (type === 'debit') return 'bg-success'
-  if (type === 'credit') return 'bg-danger'
-  return 'bg-secondary'
-}
-
-const formatDate = (iso) => {
-  if (!iso) return ''
-  return new Date(iso).toLocaleString()
 }
 
 
@@ -46,12 +31,12 @@ const gotoTransactions = () => {
 
 onMounted(async () => {
   try {
-    await fetchUser()
+    user.value = await fetchUser()
     await fetchTransactions()
 
     intervalId = setInterval(() => {
       fetchTransactions().catch(() => {
-        
+
       })
     }, 10_000)
   } catch (e) {
