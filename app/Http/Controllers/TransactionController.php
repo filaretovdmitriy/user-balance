@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AllTransactionsRequest;
 use App\Http\Resources\TransactionsResource;
 use App\Services\TransactionService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TransactionController extends Controller
 {
@@ -12,7 +15,7 @@ class TransactionController extends Controller
     {
     }
 
-    public function latestTransactions(Request $request)
+    public function latestTransactions(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
 
@@ -21,10 +24,12 @@ class TransactionController extends Controller
         return TransactionsResource::collection($transactions);
     }
 
-    public function allTransactions(Request $request)
+    public function allTransactions(AllTransactionsRequest $request): AnonymousResourceCollection
     {
         $user = $request->user();
-        $search = $request->query('search');
+
+        $data = $request->validated();
+        $search = $data['search'] ?? null;
 
         $transactions = $this->transactions->all($user, $search);
 

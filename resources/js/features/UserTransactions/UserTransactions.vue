@@ -74,7 +74,7 @@ onMounted(async () => {
     await fetchUser()
     await fetchTransactions()
   } catch (e) {
-    window.location.href = '/auth'
+   // window.location.href = '/auth'
   }
 })
 
