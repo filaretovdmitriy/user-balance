@@ -81,7 +81,7 @@ onUnmounted(() => {
     <div class="card">
       <div class="card-body">
         <div class="text-muted mb-2">
-          Текущий баланс: {{ user?.balance }}
+          Текущий баланс: {{ user?.balance.amount }}
         </div>
 
         <div v-if="loadingTx" class="py-3">
