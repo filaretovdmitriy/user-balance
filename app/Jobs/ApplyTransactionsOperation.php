@@ -47,11 +47,13 @@ class ApplyTransactionsOperation implements ShouldQueue
                    ->firstOrFail();
             }
 
+            $balanceCents = (int) str_replace('.', '', number_format((float) $balance->amount, 2, '.', ''));
+            $amountCents  = (int) str_replace('.', '', number_format((float) $this->amount, 2, '.', ''));
+
             if ($this->type === 'debit') {
-                if (bccomp((string) $balance->amount, (string) $this->amount, 2) < 0) {
+                if ($balanceCents < $amountCents) {
                     throw new RuntimeException('Не хватает баланса для списания :( ');
                 }
-
 
                 $balance->decrement('amount', $this->amount);
             } else {

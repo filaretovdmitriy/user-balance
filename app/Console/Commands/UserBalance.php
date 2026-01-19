@@ -32,19 +32,14 @@ class UserBalance extends Command
      */
     public function handle(TransactionService $transactionService)
     {
-        $name = $this->argument('name');
-        $action = $this->argument('action');
-        $amount = $this->argument('amount');
-        $description = $this->argument('description');
+        $name = $this->ask('Логин (email) пользователя');
+        $action = $this->choice('Действие', ['credit', 'debit'], 0);
+        $amount = (float) $this->ask('Сумма');
+        $description = $this->ask('Описание (необязательно)', '');
 
-        $user = User::query()->where('email', $name)->first();
+        $user = User::query()->where('name', $name)->first();
         if (! $user) {
             $this->error('Пользователь не найден');
-            return self::FAILURE;
-        }
-
-        if (! in_array($action, ['credit', 'debit'], true)) {
-            $this->error("Действие может быть только credit или debit");
             return self::FAILURE;
         }
 
