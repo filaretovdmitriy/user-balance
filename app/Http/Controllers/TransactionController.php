@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AllTransactionsRequest;
 use App\Http\Resources\TransactionsResource;
 use App\Services\TransactionService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 

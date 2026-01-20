@@ -27,7 +27,6 @@ class UserCreate extends Command
      */
     public function handle()
     {
-        //
         $name = $this->option('name') ?: $this->ask('Имя');
         $email = $this->option('email') ?: $this->ask('Email');
         $password = $this->secret('Пароль (не будет отображаться)');

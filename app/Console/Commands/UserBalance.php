@@ -32,10 +32,10 @@ class UserBalance extends Command
      */
     public function handle(TransactionService $transactionService)
     {
-        $name = $this->ask('Логин (email) пользователя');
-        $action = $this->choice('Действие', ['credit', 'debit'], 0);
-        $amount = (float) $this->ask('Сумма');
-        $description = $this->ask('Описание (необязательно)', '');
+        $name = $this->option('name') ?: $this->ask('Логин (email) пользователя');
+        $action = $this->option('action') ?: $this->choice('Действие', ['credit', 'debit'], 0);
+        $amount = $this->option('amount') ?: (float) $this->ask('Сумма');
+        $description = $this->option('description') ?: $this->ask('Описание (необязательно)', '');
 
         $user = User::query()->where('name', $name)->first();
         if (! $user) {
