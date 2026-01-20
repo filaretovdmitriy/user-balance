@@ -14,10 +14,10 @@ class UserBalance extends Command
      * @var string
      */
     protected $signature = 'user:balance 
-        {--name: Логин пользователя}
-        {--action: debit|credit}
-        {--amount: Сумма}
-        {--description: Optional Описание транзакции}
+        {--name= : Логин пользователя}
+        {--action= : debit|credit}
+        {--amount= : Сумма}
+        {--description= : Optional Описание транзакции}
         ';
 
     /**
