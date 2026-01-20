@@ -19,7 +19,7 @@ return new class () extends Migration {
 
             $table->decimal('amount', 10, 2);
 
-            $table->enum('type', ['debet','credit']);
+            $table->enum('type', ['debit','credit']);
 
             $table->text('description');
 
